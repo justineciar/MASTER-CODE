@@ -1,0 +1,66 @@
+package com.demo.mavenproject4;
+
+import com.opencsv.*;
+import java.io.*;
+import java.util.*;
+import com.opencsv.exceptions.CsvException;
+
+/**
+ *
+ * @author ADMIN
+ */
+public class EmployeeCSVUtil {
+    private static final String CSV_FILE = "employees.csv";
+
+    public static List<Employee> readEmployees() {
+        List<Employee> employees = new ArrayList<>();
+        try (CSVReader reader = new CSVReaderBuilder(new FileReader(CSV_FILE))
+                .withSkipLines(1) // Skip header row
+                .build()) {
+            String[] line;
+            while ((line = reader.readNext()) != null) {
+                employees.add(new Employee(line[0], line[1], line[2]));
+            }
+        } catch (IOException | CsvException e) {
+            e.printStackTrace();
+        }
+        return employees;
+    }
+
+    public static void writeEmployees(List<Employee> employees) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(CSV_FILE))) {
+            writer.writeNext(new String[] { "Employee ID", "First Name", "Last Name" }); // Header
+            for (Employee e : employees) {
+                writer.writeNext(new String[] {
+                    e.getEmpId(), e.getFirstName(), e.getLastName()
+                });
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addEmployee(Employee e) {
+        List<Employee> list = readEmployees();
+        list.add(e);
+        writeEmployees(list);
+    }
+
+    public static void updateEmployee(String empId, String newFirst, String newLast) {
+        List<Employee> list = readEmployees();
+        for (Employee e : list) {
+            if (e.getEmpId().equals(empId)) {
+                e.setFirstName(newFirst);
+                e.setLastName(newLast);
+            }
+        }
+        writeEmployees(list);
+    }
+
+    public static void deleteEmployee(String empId) {
+        List<Employee> list = readEmployees();
+        list.removeIf(e -> e.getEmpId().equals(empId));
+        writeEmployees(list);
+    } 
+    
+}
