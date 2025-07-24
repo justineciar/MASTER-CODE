@@ -1,0 +1,110 @@
+
+package com.demo.mavenproject4;
+import javax.swing.*;
+import java.util.List;
+
+/**
+ *
+ * @author ADMIN
+ */
+public class EmployeeUI extends JFrame {
+     private JTextField txtId, txtFirst, txtLast;
+    private JTextArea displayArea;
+
+    public EmployeeUI() {
+        setTitle("Employee Manager");              // ✅ Works now
+        setSize(500, 400);
+        setLayout(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        // Labels and Text Fields
+        JLabel lblId = new JLabel("Employee #:");
+        lblId.setBounds(20, 20, 100, 25);
+        add(lblId);
+
+        txtId = new JTextField();
+        txtId.setBounds(120, 20, 150, 25);
+        add(txtId);
+
+        JLabel lblFirst = new JLabel("First Name:");
+        lblFirst.setBounds(20, 50, 100, 25);
+        add(lblFirst);
+
+        txtFirst = new JTextField();
+        txtFirst.setBounds(120, 50, 150, 25);
+        add(txtFirst);
+
+        JLabel lblLast = new JLabel("Last Name:");
+        lblLast.setBounds(20, 80, 100, 25);
+        add(lblLast);
+
+        txtLast = new JTextField();
+        txtLast.setBounds(120, 80, 150, 25);
+        add(txtLast);
+
+        // Buttons
+        JButton btnView = new JButton("View All");
+        btnView.setBounds(300, 20, 150, 25);
+        add(btnView);
+
+        JButton btnAdd = new JButton("Add");
+        btnAdd.setBounds(300, 50, 150, 25);
+        add(btnAdd);
+
+        JButton btnUpdate = new JButton("Update");
+        btnUpdate.setBounds(300, 80, 150, 25);
+        add(btnUpdate);
+
+        JButton btnDelete = new JButton("Delete");
+        btnDelete.setBounds(300, 110, 150, 25);
+        add(btnDelete);
+
+        // Display Area
+        displayArea = new JTextArea();
+        displayArea.setBounds(20, 150, 430, 200);
+        displayArea.setEditable(false);
+        add(displayArea);
+
+        // Button Actions
+        btnView.addActionListener(e -> viewEmployees());
+        btnAdd.addActionListener(e -> addEmployee());
+        btnUpdate.addActionListener(e -> updateEmployee());
+        btnDelete.addActionListener(e -> deleteEmployee());
+
+        setVisible(true);
+    }
+
+    private void viewEmployees() {
+        List<Employee> list = EmployeeCSVUtil.readEmployees();
+        displayArea.setText("Employee List:\n");
+        for (Employee e : list) {
+            displayArea.append(e.getEmpId() + " - " + e.getFirstName() + " " + e.getLastName() + "\n");
+        }
+    }
+
+    private void addEmployee() {
+        Employee e = new Employee(txtId.getText(), txtFirst.getText(), txtLast.getText());
+        EmployeeCSVUtil.addEmployee(e);
+        JOptionPane.showMessageDialog(this, "Employee Added!");
+        viewEmployees();
+    }
+
+    private void updateEmployee() {
+        EmployeeCSVUtil.updateEmployee(txtId.getText(), txtFirst.getText(), txtLast.getText());
+        JOptionPane.showMessageDialog(this, "Employee Updated!");
+        viewEmployees();
+    }
+
+    private void deleteEmployee() {
+        EmployeeCSVUtil.deleteEmployee(txtId.getText());
+        JOptionPane.showMessageDialog(this, "Employee Deleted!");
+        viewEmployees();
+    }
+
+    // ✅ Include this main method to launch the UI
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new EmployeeUI());
+    }
+}
+
+
